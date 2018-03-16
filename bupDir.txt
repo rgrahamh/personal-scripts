@@ -1,0 +1,9 @@
+/usr
+/home/rhouck
+/home/shared
+/etc
+/dev
+/lib
+/var
+/proc
+/media

@@ -1,0 +1,4 @@
+#!/bin/bash
+#Shortcut for ssh-ing into Copernicus
+
+ssh copernicus

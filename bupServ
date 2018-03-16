@@ -1,0 +1,58 @@
+#!/bin/bash
+
+#Ryan Houck
+#Last updated on March 16, 2018
+#Script to back up Copernicus (generalized to back up any USER@SERVER combination)
+#Performs best if an ssh-keygen is set between the computer and the server first.
+
+shopt -s expand_aliases
+alias bupServ="/.bupServ.sh"
+
+SERVER=copernicus #Put the aliased server name or IP address here
+USER=rhouck #Put the user's account name here
+BUPPATH=~/Documents/$SERVER-backup #Put the path that you wish the program to back up to here
+
+#PARAMETERS:
+ #NONE: No parameters means the program runs normally, trying to back up everything in USER@SERVER:/
+ #1: A filename with paths for the server to back up, formatted with one path on each line.
+
+#EXIT CODES:
+ #0: Backup successful.
+ #1: Permission denied for some files.
+ #2: An error occurred during the backup.
+ #3: Could not establish a connection to the server.
+
+function backupServer() {
+  echo "Establishing a connection to Copernicus..."
+  ping -c3 $SERVER > /dev/null 2>&1 #Pings the server three times to see if it can connect reliably
+  if [ $? == 0 ]; then
+    echo "Connection established! Starting the backup."
+    mkdir -p $BUPPATH > /dev/null 2>&1 #Creates the backup directory (if it already doesn't exist)
+    if [ "$1" != "" ]; then #If a first parameter was given
+      while read -r currPath || [[ -n "$currPath" ]]; do #Read from each line
+        echo "Copying from $currPath."
+        mkdir -p $BUPPATH$currPath > /dev/null 2>&1 #Make the directory path on the backup-side (if it's not already present)
+        rsync -qr $USER@$SERVER:$currPath/* $BUPPATH$currPath > /dev/null 2>&1 #Copy the directory
+      done < "$1" #Piped out of the file in the first parameter
+    else
+      echo "Copying all files within permissions."
+      rsync -qr $USER@$SERVER:/ $BUPPATH > /dev/null 2>&1 #If no input file is given, attempt to back up the entire server.
+    fi
+    local exitCode=$?
+    if [ $exitCode == 0 ]; then
+      echo "Backup completed!"
+      exit 0 
+    elif [ $exitCode == 23 ]; then
+        echo "All files in your permissions are backed up, but there were some files outside of your permissions that could not be copied."
+        exit 1
+    else
+      echo "An error occurred during the backup, and the backup may be incomplete."
+      exit 2
+    fi
+  else
+    echo "Cannot establish a connection to Copernicus. Aborting."
+    exit 3
+  fi
+}
+
+backupServer $1

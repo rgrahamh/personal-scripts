@@ -1,0 +1,14 @@
+#!/bin/bash
+
+echo "Do you want to restart? Please respond with [y/N]."
+read input
+while [ "$input" != "y" ] && [ "$input" != "n" ] && [ "$input" != "Y" ] && [ "$input" != "N" ]; do
+  echo "Please give valid input."
+  read input
+done
+if [ "$input" == "y" ] || [ "$input" == "Y" ]; then
+  sudo /sbin/shutdown -r now
+  echo "Restarting."
+else
+  echo "Restart aborted."
+fi

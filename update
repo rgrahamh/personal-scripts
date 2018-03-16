@@ -1,0 +1,21 @@
+#!/bin/bash
+function updateFunc() {
+  echo "Please enter your password to chedk for updates:"
+  sudo dnf check-update > /dev/null 2>&1
+  echo "Checking for updates..."
+  local checkUpdate=$?
+  if test 0 -eq $checkUpdate; then
+    echo "No updates available!"
+  fi
+  if test 1 -eq $checkUpdate; then
+    echo "An error occured!"
+  fi
+  if test 100 -eq $checkUpdate; then
+    sudo dnf update
+    if test 0 -eq $?; then
+      restart
+    fi
+  fi
+}
+
+updateFunc

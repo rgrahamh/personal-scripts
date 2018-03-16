@@ -1,0 +1,56 @@
+#!/bin/bash
+#Ryan Houck
+#Script to back up Copernicus
+SERVER=copernicus
+USER=rhouck
+BPATH=~/Documents/$SERVER-backup
+OLDPATH=~/Documents/$SERVER-old
+
+function backupServer() {
+  echo "Establishing a connection to $SERVER..."
+  ping -c3 $SERVER > /dev/null
+  if [ $? == 0 ]; then
+    mkdir $BPATH > /dev/null
+    local isFirstRun=$? #If it's the first run, 0. Otherwise, -1.
+    if [ $? != 0 ]; then #If backupServer has been run before, make a backup of the backup.
+      echo "Storing the old backup in case something goes wrong..."
+      rm -fr $OLDPATH
+      mv $BPATH $OLDPATH
+      rm -fr $BPATH
+    fi
+    echo "Starting the backup."
+    scp -qr $USER@$SERVER:/ $BPATH
+    if [ $? == 0 ] || [ $? == 6 ] || [ $? == 7 ] ; then
+      echo "Backup completed! Removing the previous backup"
+      rm -fr $OLDPATH
+      echo "Done!"
+      exit 0
+    else
+      if [ $isFirstRun != 0 ]; then
+        echo "An error occurred during the backup. Would you like to restore the old backup? [y/N]"
+        read input
+        while [ "$input" != "y" ] && [ "$input" != "Y" ] && [ "$input" != "n" ] && [ "$input" != "N" ]; do 
+          if [ "$input" -e "y" ] || [ "$input" -e "Y" ]; then
+            rm -fr $BPATH
+            mv $OLDPATH $BPATH
+            rm -fr $OLDPATH
+            echo "Old backup restored."
+          elif [ "$input" -e "n" ] || [ "$input" -e "N" ]; then
+            rm -fr $OLDPATH
+          else
+            echo "Please give a [y/Y] if you want to restore the old backup, or [n/N] if you want to keep the incomplete one."
+            read input
+          fi
+        done
+      else
+        echo "An error occurred during the backup. The partial backup is in the proper repository."
+      fi
+      exit 1
+    fi
+  else
+    echo "Cannot establish a connection to Copernicus. Aborting."
+    exit 2
+  fi
+}
+
+backupServer
