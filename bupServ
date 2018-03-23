@@ -43,6 +43,7 @@ function backupServer() {
     else
       echo "Copying all files within permissions."
       rsync -qr $USER@$SERVER:/ $BUPPATH > /dev/null 2>&1 #If no input file is given, attempt to back up the entire server.
+      exitcode=$?
     fi
     if [ $exitCode == 0 ]; then #If error code is never anything but 0
       echo "Backup completed!"
