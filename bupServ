@@ -28,24 +28,29 @@ function backupServer() {
   if [ $? == 0 ]; then
     echo "Connection established! Starting the backup."
     mkdir -p $BUPPATH > /dev/null 2>&1 #Creates the backup directory (if it already doesn't exist)
+    local exitCode=0
     if [ "$1" != "" ]; then #If a first parameter was given
       while read -r currPath || [[ -n "$currPath" ]]; do #Read from each line
         echo "Copying from $currPath."
         mkdir -p $BUPPATH$currPath > /dev/null 2>&1 #Make the directory path on the backup-side (if it's not already present)
         rsync -qr $USER@$SERVER:$currPath/* $BUPPATH$currPath > /dev/null 2>&1 #Copy the directory
+        if [ $? != 0 ] && [ $? != 23 ]; then #Sets the error code for any error aside from File IO
+          exitCode=$?
+        elif [ $? == 23 ]; then #Sets the error code for File IO
+          exitCode=$?
+        fi
       done < "$1" #Piped out of the file in the first parameter
     else
       echo "Copying all files within permissions."
       rsync -qr $USER@$SERVER:/ $BUPPATH > /dev/null 2>&1 #If no input file is given, attempt to back up the entire server.
     fi
-    local exitCode=$?
-    if [ $exitCode == 0 ]; then
+    if [ $exitCode == 0 ]; then #If error code is never anything but 0
       echo "Backup completed!"
       exit 0 
-    elif [ $exitCode == 23 ]; then
+    elif [ $exitCode == 23 ]; then #If an IO File error occurred (like denied privacy), but no other has occurred.
         echo "All files in your permissions are backed up, but there were some files outside of your permissions that could not be copied."
         exit 1
-    else
+    else #If anything other than an IO File error occurred
       echo "An error occurred during the backup, and the backup may be incomplete."
       exit 2
     fi
