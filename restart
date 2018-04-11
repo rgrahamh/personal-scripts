@@ -7,7 +7,7 @@ while [ "$input" != "y" ] && [ "$input" != "n" ] && [ "$input" != "Y" ] && [ "$i
   read input
 done
 if [ "$input" == "y" ] || [ "$input" == "Y" ]; then
-  sudo /sbin/shutdown -r now
+  shutdown -r now
   echo "Restarting."
 else
   echo "Restart aborted."

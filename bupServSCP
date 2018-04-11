@@ -19,7 +19,7 @@ function backupServer() {
       rm -fr $BPATH
     fi
     echo "Starting the backup."
-    scp -qr $USER@$SERVER:/ $BPATH
+    scp -qCr $USER@$SERVER:/ $BPATH
     if [ $? == 0 ] || [ $? == 6 ] || [ $? == 7 ] ; then
       echo "Backup completed! Removing the previous backup"
       rm -fr $OLDPATH
