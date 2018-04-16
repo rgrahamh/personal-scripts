@@ -1,18 +1,34 @@
 #!/bin/bash
+#Ryan Houck
+#Last updated on April 16, 2018
+#Checks for updates, then gives the user to update and/or
+#restart if there is an update.
+
+#EXIT CODES:
+ #0: No errors
+ #1: An error occurred while checking for updates
+ #2: An error occurred while updating
+
 function updateFunc() {
   echo "Checking for updates..."
-  sudo dnf check-update > /dev/null
+  sudo dnf check-update > /dev/null 2>&1
   local checkUpdate=$?
   if test 0 -eq $checkUpdate; then
     echo "No updates available!"
+    exit 0
   fi
   if test 1 -eq $checkUpdate; then
-    echo "An error occured!"
+    echo "An error occured checking for updates!"
+    exit 1
   fi
   if test 100 -eq $checkUpdate; then
     sudo dnf update
     if test 0 -eq $?; then
       restart
+      exit 0
+    else
+      echo "An error occurred during the update!"
+      exit 2
     fi
   fi
 }

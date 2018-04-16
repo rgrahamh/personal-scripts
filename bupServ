@@ -1,16 +1,9 @@
 #!/bin/bash
 
 #Ryan Houck
-#Last updated on March 16, 2018
+#Last updated on April 16, 2018
 #Script to back up Copernicus (generalized to back up any USER@SERVER combination)
 #Performs best if an ssh-keygen is set between the computer and the server first.
-
-shopt -s expand_aliases
-alias bupServ="/.bupServ.sh"
-
-SERVER=copernicus #Put the aliased server name or IP address here
-USER=rhouck #Put the user's account name here
-BUPPATH=~/Documents/$SERVER-backup #Put the path that you wish the program to back up to here
 
 #PARAMETERS:
  #NONE: No parameters means the program runs normally, trying to back up everything in USER@SERVER:/
@@ -21,6 +14,10 @@ BUPPATH=~/Documents/$SERVER-backup #Put the path that you wish the program to ba
  #1: Permission denied for some files.
  #2: An error occurred during the backup.
  #3: Could not establish a connection to the server.
+
+SERVER=copernicus #Put the aliased server name or IP address here
+USER=rhouck #Put the user's account name here
+BUPPATH=~/Documents/$SERVER-backup #Put the path that you wish the program to back up to here
 
 function backupServer() {
   echo "Establishing a connection to Copernicus..."
