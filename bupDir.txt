@@ -1,3 +1,4 @@
+/media
 /usr
 /home/rhouck
 /home/shared
@@ -6,4 +7,3 @@
 /lib
 /var
 /proc
-/media

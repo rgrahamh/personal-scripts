@@ -28,12 +28,17 @@ function backupServer() {
     local exitCode=0
     if [ "$1" != "" ]; then #If a first parameter was given
       while read -r currPath || [[ -n "$currPath" ]]; do #Read from each line
-        echo "Copying from $currPath."
-        mkdir -p $BUPPATH$currPath > /dev/null 2>&1 #Make the directory path on the backup-side (if it's not already present)
-        rsync -qr $USER@$SERVER:$currPath/* $BUPPATH$currPath > /dev/null 2>&1 #Copy the directory
-        local exit=$? #Saving the exit code right after the rsync is called so that it can't be changed by other methods.
-        if [ $exit != 0 ]; then #Sets the error code if unsuccessful
-          exitCode=$exit
+        echo "Checking $SERVER for $currPath."
+        if ssh $USER@$SERVER "test -e $currPath" < /dev/null; then
+          echo "Copying $currPath."
+          mkdir -p $BUPPATH$currPath > /dev/null 2>&1 #Make the directory path on the backup-side (if it's not already present)
+          rsync -qr $USER@$SERVER:$currPath/* $BUPPATH$currPath > /dev/null 2>&1 #Copy the directory
+          local exit=$? #Saving the exit code right after the rsync is called so that it can't be changed by other methods.
+          if [ $exit != 0 ]; then #Sets the error code if unsuccessful
+            exitCode=$exit
+          fi
+        else
+          echo "$currPath does not exist, moving on."
         fi
       done < "$1" #Input piped out of the file in the first parameter
     else
