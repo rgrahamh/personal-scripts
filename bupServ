@@ -14,6 +14,7 @@
  #1: Permission denied for some files.
  #2: An error occurred during the backup.
  #3: Could not establish a connection to the server.
+ #4: File does not exist
 
 SERVER=copernicus #Put the aliased server name or IP address here
 USER=rhouck #Put the user's account name here
@@ -26,7 +27,7 @@ function backupServer() {
     echo "Connection established! Starting the backup."
     mkdir -p $BUPPATH > /dev/null 2>&1 #Creates the backup directory (if it already doesn't exist)
     local exitCode=0
-    if [ "$1" != "" ]; then #If a first parameter was given
+    if [[ "$1" != "" && -e $1 ]]; then #If a first parameter was given
       while read -r currPath || [[ -n "$currPath" ]]; do #Read from each line
         echo "Checking $SERVER for $currPath."
         if ssh $USER@$SERVER "test -e $currPath" < /dev/null; then
@@ -41,6 +42,9 @@ function backupServer() {
           echo "$currPath does not exist, moving on."
         fi
       done < "$1" #Input piped out of the file in the first parameter
+    elif [ "$1" != "" ]; then
+      echo "ERR: File does not exist." > 2
+      exit 4
     else
       echo "Copying all files within permissions."
       rsync -qr $USER@$SERVER:/ $BUPPATH > /dev/null 2>&1 #If no input file is given, attempt to back up the entire server.
