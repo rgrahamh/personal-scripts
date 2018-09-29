@@ -14,7 +14,8 @@ while [ "$input" != "y" ] && [ "$input" != "n" ] && [ "$input" != "Y" ] && [ "$i
   read input
 done
 if [ "$input" == "y" ] || [ "$input" == "Y" ]; then
-  sudo shutdown -r now
+  reboot
+  #sudo shutdown -r now
   if [ $? == 0 ]; then
     echo "Restarting."
     exit 0

@@ -1,5 +1,6 @@
 "Created by - Ryan Houck
 "Last Change - 06/20/2017
+"Put in /usr/share/vim/vim81/colors/dart.vim
 
 set background=dark
 hi clear
