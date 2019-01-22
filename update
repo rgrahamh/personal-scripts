@@ -11,7 +11,7 @@
 
 function updateFunc() {
   echo "Checking for updates..."
-  sudo dnf check-update > /dev/null 2>&1
+  sudo dnf check-update # > /dev/null 2>&1
   local checkUpdate=$?
   if test 0 -eq $checkUpdate; then
     echo "No updates available!"
