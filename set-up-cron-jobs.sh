@@ -5,7 +5,7 @@ crontab -l > tempcron
 #Enter all new jobs to be created as a new entry in the array:
 JOBS[0]='30 3 * * * $(cd $(pwd); . ./set-up-bash.sh; flask maintain prune-events) >/dev/null 2>&1'
 JOBS[1]='0 0 * * 0 /usr/local/bin/bupServ.sh >/dev/null 2>&1'
-NUM_JOBS=2
+NUM_JOBS=${#JOBS[@]}
 
 #Making sure that each job isn't already in the crontab
 i=0
