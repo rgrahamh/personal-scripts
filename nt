@@ -18,7 +18,7 @@ if [ $# -eq 0 ]; then
     if [ ! -d $NPATH ] || [ -z $(ls $NPATH) ]; then
         echo "No notes exist."
     else
-        printf "NT Notes:\n$(ls $NPATH)\n" | more
+        printf "\nNT Notes:\n$(ls $NPATH)\n\n" | more
     fi
 fi
 
@@ -30,3 +30,4 @@ if [ $# -eq 1 ]; then
     $EDITOR $1
 fi
 
+exit 0
