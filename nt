@@ -1,0 +1,32 @@
+#!/bin/bash
+EDITOR=vim
+NPATH=~/.notes
+
+#NoteTaker - A short script for convenient note taking.
+#
+
+# EXIT CODES:
+ # 0: Everything went according to plan
+ # 1: Incorrect options passed
+
+if [ $# -ne 0 ] && [ $# -ne 1 ]; then
+    printf "Please use either of the following arguments:\n\nView all notes:\nnt\n\nCreate new note/open note:\nnt <name of note>\n"
+    exit 1
+fi
+
+if [ $# -eq 0 ]; then
+    if [ ! -d $NPATH ] || [ -z $(ls $NPATH) ]; then
+        echo "No notes exist."
+    else
+        printf "NT Notes:\n$(ls $NPATH)\n" | more
+    fi
+fi
+
+if [ $# -eq 1 ]; then
+    if [ ! -d $NPATH ]; then
+        mkdir $NPATH
+    fi
+    cd $NPATH
+    $EDITOR $1
+fi
+
